@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Registration Form</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb);
+      background-size: 400% 400%;
+      animation: gradientShift 10s ease infinite;
+      overflow: hidden;
+      position: relative;
+      z-index: 0;
+    }
+
+    /* Floating bubbles background */
+    body::before,
+    body::after {
+      content: "";
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 20%, transparent 20%) center/20px 20px;
+      animation: bubbles 30s linear infinite;
+      top: -50%;
+      left: -50%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      animation-direction: reverse;
+      opacity: 0.5;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes bubbles {
+      from { transform: translateY(0); }
+      to { transform: translateY(-200px); }
+    }
+
+    .form-container {
+      width: 90%;
+      max-width: 650px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(20px);
+      border-radius: 25px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+      padding: 50px 60px;
+      animation: fadeIn 1s ease-in-out forwards;
+      z-index: 10;
+      position: relative;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-25px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 35px;
+      font-size: 30px;
+      color: #333;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .field {
+      position: relative;
+      margin-bottom: 25px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 14px 12px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.6);
+      outline: none;
+      font-size: 15px;
+      color: #333;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      box-shadow: 0 0 10px rgba(255, 182, 193, 0.8);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Floating labels only for field labels (do not affect gender labels) */
+    .field > label {
+      position: absolute;
+      left: 15px;
+      top: 14px;
+      color: #666;
+      font-size: 15px;
+      pointer-events: none;
+      transition: 0.3s ease;
+      z-index: 3;
+    }
+
+    /* When inputs/selects/textarea are filled or focused, move the label */
+    input:focus + label,
+    input:not(:placeholder-shown) + label,
+    textarea:focus + label,
+    textarea:not(:placeholder-shown) + label,
+    select:focus + label,
+    select:not([value=""]) + label {
+      top: -10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 0 6px;
+      border-radius: 8px;
+      color: #b35dc6;
+      font-size: 13px;
+    }
+
+    textarea { resize: none; }
+
+    /* ✅ Fixed Gender Buttons (labels are inline/static now) */
+    .gender-options {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-top: 10px;
+      z-index: 5;
+      position: relative;
+      flex-wrap: wrap;
+    }
+
+    /* Keep gender labels normal inline labels (no absolute positioning) */
+    .gender-options label {
+      cursor: pointer;
+      color: #444;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      padding: 6px 8px;
+      border-radius: 8px;
+    }
+
+    .gender-options input[type="radio"] {
+      accent-color: #b35dc6;
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      cursor: pointer;
+      transform: none;
+    }
+
+    small {
+      color: #e63946;
+      font-size: 13px;
+      margin-top: 3px;
+      display: block;
+    }
+
+    button.btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(90deg, #ff9a9e, #fad0c4);
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      margin-top: 10px;
+      box-shadow: 0 4px 15px rgba(255, 182, 193, 0.4);
+      z-index: 5;
+      position: relative;
+    }
+
+    button.btn:hover {
+      background: linear-gradient(90deg, #fbc2eb, #a6c1ee);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(164, 193, 238, 0.6);
+    }
+
+    @media (max-width: 768px) {
+      .form-container { padding: 35px 25px; }
+      h1 { font-size: 25px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <form id="studentForm" novalidate>
+      <h1>Student Registration</h1>
+
+      <div class="field">
+        <input type="text" id="enrollment" placeholder=" " />
+        <label for="enrollment">Enrollment Number</label>
+        <small></small>
+      </div>
+
+      <div class="field">
+        <input type="text" id="name" placeholder=" " />
+        <label for="name">Full Name</label>
+        <small></small>
+      </div>
+
+      <div class="field">
+        <input type="email" id="email" placeholder=" " />
+        <label for="email">Email</label>
+        <small></small>
+      </div>
+
+      <div class="field">
+        <input type="password" id="password" placeholder=" " />
+        <label for="password">Password</label>
+        <small></small>
+      </div>
+
+      <div class="field">
+        <input type="password" id="confirmPassword" placeholder=" " />
+        <label for="confirmPassword">Confirm Password</label>
+        <small></small>
+      </div>
+
+      <div class="field">
+        <input type="text" id="phone" placeholder=" " />
+        <label for="phone">Phone Number</label>
+        <small></small>
+      </div>
+
+      <div class="field">
+        <textarea id="address" rows="3" placeholder=" "></textarea>
+        <label for="address">Address</label>
+        <small></small>
+      </div>
+
+      <!-- ✅ Fixed Gender Section -->
+      <div class="field">
+        <p style="color:#555;font-weight:500;margin-bottom:5px;">Gender</p>
+        <div class="gender-options">
+          <label><input type="radio" name="gender" value="Male"> Male</label>
+          <label><input type="radio" name="gender" value="Female"> Female</label>
+          <label><input type="radio" name="gender" value="Other"> Other</label>
+        </div>
+        <small></small>
+      </div>
+
+      <div class="field">
+        <select id="branch" value="">
+          <option value="">-- Select Branch --</option>
+          <option value="Computer">Computer Engineering</option>
+          <option value="IT">Information Technology</option>
+          <option value="Mechanical">Mechanical Engineering</option>
+          <option value="Electrical">Electrical Engineering</option>
+          <option value="Civil">Civil Engineering</option>
+        </select>
+        <label for="branch">Branch</label>
+        <small></small>
+      </div>
+
+      <button type="submit" class="btn">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    // Animate fields in sequence
+    const fields = document.querySelectorAll(".field");
+    fields.forEach((field, i) => {
+      setTimeout(() => {
+        field.style.opacity = "1";
+        field.style.transform = "translateY(0)";
+      }, 150 * i);
+    });
+
+    // Confetti animation
+    function launchConfetti() {
+      const colors = ["#a1c4fd", "#c2e9fb", "#a6c1ee", "#b39ddb"];
+      for (let i = 0; i < 80; i++) {
+        const confetti = document.createElement("div");
+        confetti.style.position = "fixed";
+        confetti.style.width = "8px";
+        confetti.style.height = "8px";
+        confetti.style.borderRadius = "50%";
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.top = Math.random() * 100 + "%";
+        confetti.style.left = Math.random() * 100 + "%";
+        confetti.style.opacity = 0.8;
+        confetti.style.zIndex = 9999;
+        document.body.appendChild(confetti);
+        const xMove = (Math.random() - 0.5) * 300;
+        const yMove = 800 + Math.random() * 200;
+        confetti.animate([
+          { transform: `translate(0,0)`, opacity: 1 },
+          { transform: `translate(${xMove}px, ${yMove}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+        ], { duration: 2500 + Math.random() * 1000, easing: "ease-out" })
+        .onfinish = () => confetti.remove();
+      }
+    }
+
+    // Validation
+    document.getElementById("studentForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      let valid = true;
+
+      function showError(id, message) {
+        const field = document.getElementById(id);
+        const small = field.parentElement.querySelector("small");
+        small.textContent = message;
+        field.style.boxShadow = message ? "0 0 8px #ff6b6b" : "none";
+        if (message) valid = false;
+      }
+
+      const enrollment = document.getElementById("enrollment").value.trim();
+      showError("enrollment", enrollment === "" ? "Enrollment number is required" : "");
+
+      const name = document.getElementById("name").value.trim();
+      showError("name", name === "" ? "Name is required" : "");
+
+      const email = document.getElementById("email").value.trim();
+      const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+      showError("email", !emailPattern.test(email) ? "Enter a valid email" : "");
+
+      const password = document.getElementById("password").value.trim();
+      showError("password", password.length < 6 ? "Password must be at least 6 characters" : "");
+
+      const confirmPassword = document.getElementById("confirmPassword").value.trim();
+      showError("confirmPassword", confirmPassword !== password ? "Passwords do not match" : "");
+
+      const phone = document.getElementById("phone").value.trim();
+      const phonePattern = /^[0-9]{10}$/;
+      showError("phone", !phonePattern.test(phone) ? "Enter valid 10-digit number" : "");
+
+      const address = document.getElementById("address").value.trim();
+      showError("address", address === "" ? "Address is required" : "");
+
+      const genderChecked = document.querySelector('input[name="gender"]:checked');
+      const genderSmall = document.querySelector('.gender-options').parentElement.querySelector("small");
+      if (!genderChecked) {
+        genderSmall.textContent = "Select your gender";
+        valid = false;
+      } else genderSmall.textContent = "";
+
+      const branch = document.getElementById("branch").value;
+      showError("branch", branch === "" ? "Select your branch" : "");
+
+      if (valid) {
+        alert("🎉 Registration Successful!");
+        launchConfetti();
+        this.reset();
+
+        // Reset floating labels back to initial position after reset
+        document.querySelectorAll('.field > label').forEach(lbl => {
+          // small timeout to allow reset to apply
+          setTimeout(() => {
+            lbl.classList && lbl.classList.remove('filled');
+          }, 10);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
